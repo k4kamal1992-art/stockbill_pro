@@ -43,8 +43,7 @@ class _BusinessSelectScreenState extends State<BusinessSelectScreen> {
               ),
               const SizedBox(height: 4),
               Text(
-                'আপনার ব্যবসা
-নির্বাচন করুন',
+                'আপনার ব্যবসা\nনির্বাচন করুন',
                 style: Theme.of(context).textTheme.headlineLarge?.copyWith(
                   fontSize: 30,
                   height: 1.2,

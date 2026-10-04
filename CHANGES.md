@@ -34,3 +34,13 @@
 
 ## GitHub
 - Added `.github/workflows/flutter.yml` (analyze + test + debug APK on every push to `main`).
+
+## Round 2 (fixes from the first GitHub Actions build log)
+- Raw newlines inside strings (business_select_screen, sales_report_screen) -> proper `\n`.
+- `@noverride` typo, `CardTheme` -> `CardThemeData`, `Icons.phone_outline` -> `phone_outlined`, const `.toUpperCase()`, fl_chart interval type.
+- Added `AppConstants.prefLastBackupDate`, `sqflite` import in product_repository, removed bad `copyWith(updatedAt:)`.
+- `BillModel.items` is now assignable and `fromMap` tolerates a missing items list; `BillItemModel.id` added (used by returns).
+- Bill dates are `DateTime`: fixed `_formatDate` in bills/return screens.
+- `CustomerModel` gained `email` and `gstin` (+ DB columns and migration).
+- Profile screen: correct provider getters/methods, `CustomerListScreen(businessType)`, working GST export (share GSTR-1 JSON).
+- Shop list: `StoreSetupScreen(businessType)`.

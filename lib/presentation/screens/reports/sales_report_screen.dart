@@ -352,7 +352,7 @@ class _SalesReportScreenState extends State<SalesReportScreen> {
 
     final entries = data.entries.toList();
     final maxY = entries.map((e) => e.value).reduce((a, b) => a > b ? a : b) * 1.2;
-    final interval = maxY > 0 ? maxY / 4 : 1;
+    final double interval = maxY > 0 ? maxY / 4 : 1.0;
 
     return GlassCard(
       padding: const EdgeInsets.all(16),
@@ -392,8 +392,7 @@ class _SalesReportScreenState extends State<SalesReportScreen> {
                         label = '${months[int.parse(parts[1]) - 1]} ${parts[0]}';
                       }
                       return BarTooltipItem(
-                        '$label
-₹${value.toStringAsFixed(0)}',
+                        '$label\n₹${value.toStringAsFixed(0)}',
                         const TextStyle(
                           color: Colors.white,
                           fontSize: 12,

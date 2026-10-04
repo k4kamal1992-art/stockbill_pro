@@ -59,7 +59,7 @@ class _BarcodeScannerScreenState extends State<BarcodeScannerScreen>
     _animation = Tween<double>(begin: 0, end: 1).animate(_animationController);
   }
 
-  @noverride
+  @override
   void dispose() {
     _animationController.dispose();
     _manualController.dispose();

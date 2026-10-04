@@ -1,3 +1,4 @@
+import 'package:sqflite/sqflite.dart';
 import '../database/database_helper.dart';
 import '../models/product_model.dart';
 
@@ -196,7 +197,10 @@ class ProductRepository {
   Future<int> updateProduct(ProductModel product) async {
     return await _db.update(
       DatabaseHelper.tableProducts,
-      data: product.copyWith(updatedAt: DateTime.now()).toMap(),
+      data: {
+        ...product.toMap(),
+        'updatedAt': DateTime.now().toIso8601String(),
+      },
       where: 'id = ?',
       whereArgs: [product.id],
     );

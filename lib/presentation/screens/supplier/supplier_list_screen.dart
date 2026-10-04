@@ -91,7 +91,7 @@ class _SupplierListScreenState extends State<SupplierListScreen> {
               TextField(
                 controller: phoneController,
                 keyboardType: TextInputType.phone,
-                decoration: _inputDecoration('ফোন', Icons.phone_outline),
+                decoration: _inputDecoration('ফোন', Icons.phone_outlined),
               ),
               const SizedBox(height: 12),
               TextField(

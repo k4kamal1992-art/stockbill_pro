@@ -1,6 +1,8 @@
 import 'package:uuid/uuid.dart';
 
 class BillItemModel {
+  /// Row id from the bill_items table (null for items not yet saved).
+  final String? id;
   final String productId;
   final String productName;
   final double quantity;
@@ -13,6 +15,7 @@ class BillItemModel {
   final String? color;
 
   BillItemModel({
+    this.id,
     required this.productId,
     required this.productName,
     required this.quantity,
@@ -42,6 +45,7 @@ class BillItemModel {
 
   factory BillItemModel.fromMap(Map<String, dynamic> map) {
     return BillItemModel(
+      id: map['id']?.toString(),
       productId: map['productId'] as String,
       productName: map['productName'] as String,
       quantity: (map['quantity'] as num).toDouble(),
@@ -61,7 +65,7 @@ class BillModel {
   final String billNumber;
   final String customerName;
   final String? customerPhone;
-  final List<BillItemModel> items;
+  List<BillItemModel> items;
   final double subtotal;
   final double gstAmount;
   final double totalAmount;
@@ -133,7 +137,7 @@ class BillModel {
       billNumber: map['billNumber'] as String,
       customerName: map['customerName'] as String,
       customerPhone: map['customerPhone'] as String?,
-      items: (map['items'] as List<dynamic>)
+      items: ((map['items'] as List<dynamic>?) ?? const [])
           .map((e) => BillItemModel.fromMap(e as Map<String, dynamic>))
           .toList(),
       subtotal: (map['subtotal'] as num).toDouble(),

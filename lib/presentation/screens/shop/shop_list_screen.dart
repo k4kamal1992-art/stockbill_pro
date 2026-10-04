@@ -75,7 +75,11 @@ class _ShopListScreenState extends State<ShopListScreen> {
       floatingActionButton: FloatingActionButton.extended(
         onPressed: () {
           Navigator.of(context).push(
-            MaterialPageRoute(builder: (_) => const StoreSetupScreen()),
+            MaterialPageRoute(
+              builder: (_) => StoreSetupScreen(
+                businessType: context.read<BusinessProvider>().currentBusiness,
+              ),
+            ),
           );
         },
         backgroundColor: const Color(0xFF5856D6),

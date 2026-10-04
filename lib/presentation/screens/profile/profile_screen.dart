@@ -50,7 +50,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
     final totalCustomers = customerProvider.customers.length;
     final totalDue = customerProvider.customers.fold<double>(
-      0, (sum, c) => sum + c.dueAmount,
+      0, (sum, c) => sum + c.totalDue,
     );
 
     return Scaffold(
@@ -76,7 +76,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       totalCustomers.toString(),
                       const Color(0xFF007AFF),
                       Icons.people,
-                      () => _navigateTo(const CustomerListScreen()),
+                      () => _navigateTo(CustomerListScreen(businessType: widget.businessType)),
                     ),
                   ),
                   const SizedBox(width: 12),
@@ -86,7 +86,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       'INR ${totalDue.toStringAsFixed(0)}',
                       const Color(0xFFFF3B30),
                       Icons.account_balance_wallet,
-                      () => _navigateTo(const CustomerListScreen()),
+                      () => _navigateTo(CustomerListScreen(businessType: widget.businessType)),
                     ),
                   ),
                 ],
@@ -159,7 +159,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 icon: Icons.business,
                 iconColor: config.primary,
                 title: 'ব্যবসার তথ্য',
-                subtitle: business.shopName.isEmpty ? 'সেটআপ করুন' : business.shopName,
+                subtitle: business.storeName.isEmpty ? 'সেটআপ করুন' : business.storeName,
                 onTap: () => _navigateTo(const SettingsScreen()),
               ),
               _buildMenuCard(
@@ -174,7 +174,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 iconColor: const Color(0xFFFF9500),
                 title: 'থিম',
                 subtitle: theme.isDarkMode ? 'ডার্ক মোড' : 'লাইট মোড',
-                onTap: () => theme.toggleTheme(),
+                onTap: () => theme.toggleDarkMode(),
               ),
               _buildMenuCard(
                 icon: Icons.settings,
@@ -239,7 +239,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
             ),
             child: Center(
               child: Text(
-                business.shopName.isNotEmpty ? business.shopName[0].toUpperCase() : 'S',
+                business.storeName.isNotEmpty ? business.storeName[0].toUpperCase() : 'S',
                 style: const TextStyle(
                   color: Colors.white,
                   fontSize: 28,
@@ -254,7 +254,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  business.shopName.isNotEmpty ? business.shopName : 'আপনার দোকান',
+                  business.storeName.isNotEmpty ? business.storeName : 'আপনার দোকান',
                   style: const TextStyle(
                     fontSize: 18,
                     fontWeight: FontWeight.w800,
@@ -262,7 +262,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 ),
                 const SizedBox(height: 4),
                 Text(
-                  business.ownerName.isNotEmpty ? business.ownerName : 'মালিকের নাম',
+                  business.storePhone.isNotEmpty ? business.storePhone : 'ফোন নম্বর সেট করুন',
                   style: TextStyle(
                     fontSize: 14,
                     color: Colors.grey[600],
@@ -430,6 +430,23 @@ class _ProfileScreenState extends State<ProfileScreen> {
     );
   }
 
+  Future<void> _showGSTExportSheet(BuildContext context) async {
+    final business = context.read<BusinessProvider>();
+    final messenger = ScaffoldMessenger.of(context);
+    try {
+      final json = await GSTService().exportGSTR1Json(
+        month: DateTime.now(),
+        gstin: business.gstin,
+        shopName: business.storeName,
+      );
+      await Share.share(json, subject: 'GSTR-1 ${DateTime.now().month}/${DateTime.now().year}');
+    } catch (e) {
+      messenger.showSnackBar(
+        SnackBar(content: Text('GST এক্সপোর্ট ব্যর্থ: $e'), backgroundColor: Colors.red),
+      );
+    }
+  }
+
   void _navigateTo(Widget screen) {
     Navigator.of(context).push(
       MaterialPageRoute(builder: (_) => screen),
@@ -493,7 +510,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
     final isSelected = language.locale.languageCode == code;
     return GestureDetector(
       onTap: () {
-        language.setLocale(code);
+        language.setLanguage(
+          code == 'bn' ? 'বাংলা' : (code == 'hi' ? 'हिंदी' : 'English'),
+        );
         Navigator.pop(context);
       },
       child: Container(

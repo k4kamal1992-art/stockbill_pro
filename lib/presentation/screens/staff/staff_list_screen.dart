@@ -73,7 +73,7 @@ class _StaffListScreenState extends State<StaffListScreen> {
               TextField(
                 controller: phoneController,
                 keyboardType: TextInputType.phone,
-                decoration: _inputDecoration('Phone', Icons.phone_outline),
+                decoration: _inputDecoration('Phone', Icons.phone_outlined),
               ),
               const SizedBox(height: 12),
               TextField(

@@ -5,6 +5,8 @@ class CustomerModel {
   final String name;
   final String? phone;
   final String? address;
+  final String? email;
+  final String? gstin;
   final double totalDue;
   final double totalPaid;
   final DateTime createdAt;
@@ -16,6 +18,8 @@ class CustomerModel {
     required this.name,
     this.phone,
     this.address,
+    this.email,
+    this.gstin,
     this.totalDue = 0.0,
     this.totalPaid = 0.0,
     DateTime? createdAt,
@@ -31,6 +35,8 @@ class CustomerModel {
       'name': name,
       'phone': phone,
       'address': address,
+      'email': email,
+      'gstin': gstin,
       'totalDue': totalDue,
       'totalPaid': totalPaid,
       'createdAt': createdAt.toIso8601String(),
@@ -45,6 +51,8 @@ class CustomerModel {
       name: map['name'] as String,
       phone: map['phone'] as String?,
       address: map['address'] as String?,
+      email: map['email'] as String?,
+      gstin: map['gstin'] as String?,
       totalDue: (map['totalDue'] as num?)?.toDouble() ?? 0.0,
       totalPaid: (map['totalPaid'] as num?)?.toDouble() ?? 0.0,
       createdAt: DateTime.parse(map['createdAt'] as String),
@@ -57,6 +65,8 @@ class CustomerModel {
     String? name,
     String? phone,
     String? address,
+    String? email,
+    String? gstin,
     double? totalDue,
     double? totalPaid,
     bool? isActive,
@@ -66,6 +76,8 @@ class CustomerModel {
       name: name ?? this.name,
       phone: phone ?? this.phone,
       address: address ?? this.address,
+      email: email ?? this.email,
+      gstin: gstin ?? this.gstin,
       totalDue: totalDue ?? this.totalDue,
       totalPaid: totalPaid ?? this.totalPaid,
       createdAt: createdAt,

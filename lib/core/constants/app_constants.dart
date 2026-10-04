@@ -9,6 +9,7 @@ class AppConstants {
   static const String prefPin = 'pin_code';
   static const String prefLanguage = 'language';
   static const String prefDarkMode = 'dark_mode';
+  static const String prefLastBackupDate = 'last_backup_date';
   static const String prefOnboardingComplete = 'onboarding_complete';
 
   static const List<String> languages = ['বাংলা', 'English', 'हिंदी'];

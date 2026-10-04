@@ -132,6 +132,8 @@ class DatabaseHelper {
         address TEXT,
         totalDue REAL DEFAULT 0,
         totalPaid REAL DEFAULT 0,
+        email TEXT,
+        gstin TEXT,
         createdAt TEXT NOT NULL,
         updatedAt TEXT NOT NULL,
         isActive INTEGER DEFAULT 1,
@@ -279,6 +281,8 @@ class DatabaseHelper {
       await _addColumnIfMissing(db, tableProducts, 'isDeleted', 'INTEGER DEFAULT 0');
       await _addColumnIfMissing(db, tableBills, 'isDeleted', 'INTEGER DEFAULT 0');
       await _addColumnIfMissing(db, tableCustomers, 'isDeleted', 'INTEGER DEFAULT 0');
+      await _addColumnIfMissing(db, tableCustomers, 'email', 'TEXT');
+      await _addColumnIfMissing(db, tableCustomers, 'gstin', 'TEXT');
       await _createExtraTables(db);
     }
   }

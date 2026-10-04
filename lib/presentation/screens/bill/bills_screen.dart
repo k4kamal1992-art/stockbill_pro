@@ -74,7 +74,7 @@ class _BillsScreenState extends State<BillsScreen> {
     switch (_selectedFilter) {
       case 'today':
         result = result.where((b) {
-          final date = DateTime.tryParse(b.billDate);
+          final date = b.billDate;
           return date != null &&
               date.day == now.day &&
               date.month == now.month &&
@@ -84,14 +84,14 @@ class _BillsScreenState extends State<BillsScreen> {
       case 'week':
         final weekAgo = now.subtract(const Duration(days: 7));
         result = result.where((b) {
-          final date = DateTime.tryParse(b.billDate);
+          final date = b.billDate;
           return date != null && date.isAfter(weekAgo);
         }).toList();
         break;
       case 'month':
         final monthAgo = now.subtract(const Duration(days: 30));
         result = result.where((b) {
-          final date = DateTime.tryParse(b.billDate);
+          final date = b.billDate;
           return date != null && date.isAfter(monthAgo);
         }).toList();
         break;
@@ -124,9 +124,7 @@ class _BillsScreenState extends State<BillsScreen> {
     });
   }
 
-  String _formatDate(String isoDate) {
-    final date = DateTime.tryParse(isoDate);
-    if (date == null) return '';
+  String _formatDate(DateTime date) {
     return DateFormat('dd MMM yyyy, hh:mm a').format(date);
   }
 

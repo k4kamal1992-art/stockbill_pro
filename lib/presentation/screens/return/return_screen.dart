@@ -94,9 +94,7 @@ class _ReturnScreenState extends State<ReturnScreen> {
     );
   }
 
-  String _formatDate(String isoDate) {
-    final date = DateTime.tryParse(isoDate);
-    if (date == null) return '';
+  String _formatDate(DateTime date) {
     return '${date.day.toString().padLeft(2, '0')}/${date.month.toString().padLeft(2, '0')}/${date.year}';
   }
 

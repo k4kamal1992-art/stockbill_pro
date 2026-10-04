@@ -200,7 +200,7 @@ class _StockReportScreenState extends State<StockReportScreen> {
                       ),
                     ),
                     const SizedBox(width: 8),
-                    const Text(
+                    Text(
                       'মেয়াদোত্তীর্ণের তালিকা'.toUpperCase(),
                       style: TextStyle(
                         fontSize: 12,
