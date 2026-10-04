@@ -1,0 +1,10 @@
+# Flutter / Dart
+.dart_tool/
+.packages
+build/
+pubspec.lock
+
+# Secrets - never commit
+android/key.properties
+android/app/*.jks
+*.keystore
