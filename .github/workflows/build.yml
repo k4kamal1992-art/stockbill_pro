@@ -55,6 +55,8 @@ jobs:
           if [ ! -d android ]; then
             flutter create . --org com.stockbillpro --project-name stockbill_pro
           fi
+      - name: Add camera/Bluetooth permissions
+        run: python3 tool/patch_android.py
 
       - run: flutter pub get
 
