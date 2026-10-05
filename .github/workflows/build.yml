@@ -58,7 +58,7 @@ jobs:
       - name: Add camera/Bluetooth permissions
         run: python3 tool/patch_android.py
 
-      
+      - run: flutter pub get
 
       - name: Analyze
         run: flutter analyze --no-fatal-infos
