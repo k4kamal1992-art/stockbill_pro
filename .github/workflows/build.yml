@@ -13,6 +13,7 @@ jobs:
   build:
     runs-on: ubuntu-latest
     timeout-minutes: 40
+
     steps:
       - uses: actions/checkout@v4
 
@@ -21,21 +22,25 @@ jobs:
           if ls *.zip >/dev/null 2>&1; then
             zipfile=$(ls *.zip | head -n1)
             echo "Extracting $zipfile"
-            mkdir /tmp/x
-            unzip -q "$zipfile" -d /tmp/x -x "*/.github/*" ".github/*"
+
+            mkdir -p /tmp/x
+
+            unzip -q "$zipfile" -d /tmp/x \
+              -x "*/.github/*" ".github/*"
+
             count=$(find /tmp/x -mindepth 1 -maxdepth 1 | wc -l)
             top=$(find /tmp/x -mindepth 1 -maxdepth 1 -type d | head -n1)
+
             if [ "$count" = "1" ] && [ -n "$top" ]; then
               cp -a "$top"/. .
             else
               cp -a /tmp/x/. .
             fi
+
             rm -f "$zipfile"
-            git config user.name "github-actions"
-            git config user.email "github-actions@users.noreply.github.com"
-            git add -A
-            git commit -m "Extract project from zip" || true
-            git push
+
+            echo "Project extracted successfully."
+
           else
             echo "No zip found, using files already in the repo"
           fi
@@ -50,28 +55,38 @@ jobs:
           channel: stable
           cache: true
 
-      - name: Create android/ ios/ folders if missing
+      - name: Create Android/iOS folders if missing
         run: |
           if [ ! -d android ]; then
-            flutter create . --org com.stockbillpro --project-name stockbill_pro
+            flutter create . \
+              --org com.stockbillpro \
+              --project-name stockbill_pro
           fi
-      - name: Add camera/Bluetooth permissions
-        run: python3 tool/patch_android.py
 
-      - run: flutter pub get
+      - name: Add camera/Bluetooth permissions
+        run: |
+          python3 tool/patch_android.py
+
+      - name: Get Flutter dependencies
+        run: |
+          flutter pub get
 
       - name: Analyze
-        run: flutter analyze --no-fatal-infos
+        run: |
+          flutter analyze --no-fatal-infos
         continue-on-error: true
 
       - name: Test
-        run: flutter test
+        run: |
+          flutter test
         continue-on-error: true
 
       - name: Build debug APK
-        run: flutter build apk --debug
+        run: |
+          flutter build apk --debug
 
-      - uses: actions/upload-artifact@v4
+      - name: Upload Debug APK
+        uses: actions/upload-artifact@v4
         with:
           name: stockbill-debug-apk
           path: build/app/outputs/flutter-apk/app-debug.apk
