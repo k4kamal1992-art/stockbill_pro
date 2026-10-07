@@ -3,8 +3,7 @@ name: Build StockBill Pro
 on:
   workflow_dispatch:
   push:
-    paths:
-      - '*.zip'
+    branches: [main]
 
 permissions:
   contents: write
@@ -15,8 +14,14 @@ jobs:
     timeout-minutes: 40
 
     steps:
+      # ============================================
+      # Step 1: Checkout repository
+      # ============================================
       - uses: actions/checkout@v4
 
+      # ============================================
+      # Step 2: Unzip project (if a zip is present)
+      # ============================================
       - name: Unzip project (if a zip is present)
         run: |
           if ls *.zip >/dev/null 2>&1; then
@@ -38,55 +43,115 @@ jobs:
             fi
 
             rm -f "$zipfile"
-
             echo "Project extracted successfully."
-
           else
             echo "No zip found, using files already in the repo"
           fi
 
+      # ============================================
+      # Step 3: Setup Java 17
+      # ============================================
       - uses: actions/setup-java@v4
         with:
           distribution: temurin
           java-version: '17'
 
+      # ============================================
+      # Step 4: Setup Flutter (stable, cached)
+      # ============================================
       - uses: subosito/flutter-action@v2
         with:
           channel: stable
+          flutter-version: '3.24.0'
           cache: true
 
+      - name: Verify Flutter setup
+        run: |
+          flutter --version
+          flutter doctor -v
+
+      # ============================================
+      # Step 5: Create Android/iOS folders if missing
+      # ============================================
       - name: Create Android/iOS folders if missing
         run: |
           if [ ! -d android ]; then
+            echo "Android folder missing. Running flutter create..."
+            cp pubspec.yaml pubspec.yaml.bak
             flutter create . \
               --org com.stockbillpro \
               --project-name stockbill_pro
+            cp pubspec.yaml.bak pubspec.yaml
+            rm pubspec.yaml.bak
+            echo "flutter create completed."
+          else
+            echo "Android folder already exists. Skipping flutter create."
           fi
 
+      # ============================================
+      # Step 6: Debug - List Android files
+      # ============================================
+      - name: Debug Android structure
+        run: |
+          echo "=== Android folder ==="
+          ls -la android/ 2>/dev/null || echo "android/ NOT FOUND"
+          echo "=== AndroidManifest.xml ==="
+          ls -la android/app/src/main/AndroidManifest.xml 2>/dev/null || echo "AndroidManifest.xml NOT FOUND"
+          echo "=== build.gradle ==="
+          ls -la android/app/build.gradle 2>/dev/null || echo "build.gradle NOT FOUND"
+          echo "=== tool folder ==="
+          ls -la tool/ 2>/dev/null || echo "tool/ NOT FOUND"
+
+      # ============================================
+      # Step 7: Patch Android files
+      # ============================================
       - name: Add camera/Bluetooth permissions
         run: |
           python3 tool/patch_android.py
 
+      # ============================================
+      # Step 8: Get Flutter dependencies
+      # ============================================
       - name: Get Flutter dependencies
-        run: |
-          flutter pub get
+        run: flutter pub get
 
+      # ============================================
+      # Step 9: Analyze code
+      # ============================================
       - name: Analyze
-        run: |
-          flutter analyze --no-fatal-infos
+        run: flutter analyze --no-fatal-infos
         continue-on-error: true
 
+      # ============================================
+      # Step 10: Run tests
+      # ============================================
       - name: Test
-        run: |
-          flutter test
+        run: flutter test
         continue-on-error: true
 
+      # ============================================
+      # Step 11: Build debug APK
+      # ============================================
       - name: Build debug APK
-        run: |
-          flutter build apk --debug
+        run: flutter build apk --debug --verbose
 
+      # ============================================
+      # Step 12: Upload APK artifact
+      # ============================================
       - name: Upload Debug APK
         uses: actions/upload-artifact@v4
         with:
           name: stockbill-debug-apk
           path: build/app/outputs/flutter-apk/app-debug.apk
+
+      # ============================================
+      # Step 13: Upload build logs (for debugging)
+      # ============================================
+      - name: Upload build logs on failure
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: build-logs
+          path: |
+            build/
+            android/
