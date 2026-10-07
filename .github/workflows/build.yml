@@ -57,13 +57,11 @@ jobs:
 
       - name: Create Android/iOS folders if missing
         run: |
-         if [ ! -d android ]; then
-          cp pubspec.yaml pubspec.yaml.bak
-           flutter create . \
-        --org com.stockbillpro \
-          --project-name stockbill_pro
-        cp pubspec.yaml.bak pubspec.yaml
-      fi
+          if [ ! -d android ]; then
+            flutter create . \
+              --org com.stockbillpro \
+              --project-name stockbill_pro
+          fi
 
       - name: Add camera/Bluetooth permissions
         run: |
