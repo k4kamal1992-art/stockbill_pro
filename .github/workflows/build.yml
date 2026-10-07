@@ -27,21 +27,15 @@ jobs:
           if ls *.zip >/dev/null 2>&1; then
             zipfile=$(ls *.zip | head -n1)
             echo "Extracting $zipfile"
-
             mkdir -p /tmp/x
-
-            unzip -q "$zipfile" -d /tmp/x \
-              -x "*/.github/*" ".github/*"
-
+            unzip -q "$zipfile" -d /tmp/x -x "*/.github/*" ".github/*"
             count=$(find /tmp/x -mindepth 1 -maxdepth 1 | wc -l)
             top=$(find /tmp/x -mindepth 1 -maxdepth 1 -type d | head -n1)
-
             if [ "$count" = "1" ] && [ -n "$top" ]; then
               cp -a "$top"/. .
             else
               cp -a /tmp/x/. .
             fi
-
             rm -f "$zipfile"
             echo "Project extracted successfully."
           else
@@ -57,7 +51,7 @@ jobs:
           java-version: '17'
 
       # ============================================
-      # Step 4: Setup Flutter (stable, cached)
+      # Step 4: Setup Flutter
       # ============================================
       - uses: subosito/flutter-action@v2
         with:
@@ -71,21 +65,16 @@ jobs:
           flutter doctor -v
 
       # ============================================
-      # Step 5: Create Android/iOS folders if missing
+      # Step 5: Create Android folder if missing
       # ============================================
-      - name: Create Android/iOS folders if missing
+      - name: Create Android folder if missing
         run: |
           if [ ! -d android ]; then
-            echo "Android folder missing. Running flutter create..."
-            cp pubspec.yaml pubspec.yaml.bak
-            flutter create . \
-              --org com.stockbillpro \
-              --project-name stockbill_pro
-            cp pubspec.yaml.bak pubspec.yaml
-            rm pubspec.yaml.bak
-            echo "flutter create completed."
+            echo "Android folder missing. Adding Android platform..."
+            flutter create --platforms android --org com.stockbillpro .
+            echo "Android platform added."
           else
-            echo "Android folder already exists. Skipping flutter create."
+            echo "Android folder already exists. Skipping."
           fi
 
       # ============================================
@@ -145,7 +134,7 @@ jobs:
           path: build/app/outputs/flutter-apk/app-debug.apk
 
       # ============================================
-      # Step 13: Upload build logs (for debugging)
+      # Step 13: Upload build logs on failure
       # ============================================
       - name: Upload build logs on failure
         if: failure()
