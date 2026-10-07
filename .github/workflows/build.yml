@@ -70,9 +70,19 @@ jobs:
       - name: Create Android folder if missing
         run: |
           if [ ! -d android ]; then
-            echo "Android folder missing. Adding Android platform with overwrite..."
+            echo "Backing up lib and assets folders..."
+            cp -r lib /tmp/lib_backup
+            cp -r assets /tmp/assets_backup 2>/dev/null || true
+            
+            echo "Adding Android platform with overwrite..."
             flutter create --platforms android --org com.stockbillpro --project-name stockbill_pro --overwrite .
-            echo "Android platform added."
+            
+            echo "Restoring lib and assets folders..."
+            rm -rf lib
+            cp -r /tmp/lib_backup lib
+            cp -r /tmp/assets_backup assets 2>/dev/null || true
+            
+            echo "Android platform added, original code restored."
           else
             echo "Android folder already exists. Skipping."
           fi
